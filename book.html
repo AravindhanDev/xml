@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<p id="demo" style="font-family: monospace"></p>
+
+		<script>
+			var xhttp = new XMLHttpRequest()
+			xhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					showResult(this.responseXML)
+				}
+			}
+			xhttp.open("GET", "state.xml", true)
+			xhttp.send()
+
+			function showResult(xml) {
+				let txt = ""
+				path = "/states/state/name"
+				pathPop = "/states/state/population"
+				pathLanguage = "/states/state/language"
+				pathArea = "/states/state/area"
+				pathCrop = "/states/state/primaryCrop"
+
+				if (xml.evaluate) {
+					var nodes = xml.evaluate(path, xml, null, XPathResult.ANY_TYPE, null)
+					var nodesPop = xml.evaluate(
+						pathPop,
+						xml,
+						null,
+						XPathResult.ANY_TYPE,
+						null
+					)
+					var nodesLanguage = xml.evaluate(
+						pathLanguage,
+						xml,
+						null,
+						XPathResult.ANY_TYPE,
+						null
+					)
+					var nodesArea = xml.evaluate(
+						pathArea,
+						xml,
+						null,
+						XPathResult.ANY_TYPE,
+						null
+					)
+					var nodesCrop = xml.evaluate(
+						pathCrop,
+						xml,
+						null,
+						XPathResult.ANY_TYPE,
+						null
+					)
+					var result = nodes.iterateNext()
+					var resultPop = nodesPop.iterateNext()
+					var resultLang = nodesLanguage.iterateNext()
+					var resultArea = nodesArea.iterateNext()
+					var resultCrop = nodesCrop.iterateNext()
+
+					while (result) {
+						// return lang used in tn
+						if (result.childNodes[0].nodeValue == "Tamil Nadu") {
+							console.log(resultLang.childNodes[0].nodeValue)
+						}
+						// return area of kerala
+						if (result.childNodes[0].nodeValue == "Kerala") {
+							console.log(result)
+						}
+						// return name of all the states grater than 10 lakhs
+						if (resultPop.childNodes[0].nodeValue > 1000000) {
+							txt += result.childNodes[0].nodeValue + "<br>"
+							txt += resultLang.childNodes[0].nodeValue + "<br>"
+						}
+						// return no of states whose primary crop is same
+						if (resultCrop.childNodes[0].nodeValue == "Rice") {
+							console.log(resultCrop)
+							txt += result.childNodes[0].nodeValue + "<br>"
+						}
+						// return names of all states where area is grater than 1lakh sqkm
+						if (resultArea.childNodes[0].nodeValue > 100000) {
+							console.log(resultArea)
+							txt +=
+								"Area of " +
+								result.childNodes[0].nodeValue +
+								" " +
+								resultArea.childNodes[0].nodeValue +
+								"<br>"
+						}
+
+						result = nodes.iterateNext()
+						resultArea = nodesArea.iterateNext()
+						resultCrop = nodesCrop.iterateNext()
+						resultPop = nodesPop.iterateNext()
+						resultLang = nodesLanguage.iterateNext()
+					}
+					// Code For Internet Explorer
+				}
+				document.getElementById("demo").innerHTML = txt
+			}
+		</script>
+	</body>
+</html>
